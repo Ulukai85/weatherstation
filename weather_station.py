@@ -1,24 +1,42 @@
-import time
+from time import sleep
+from gpio_setup import cleanup
 
-from dht11 import DHT11
-from ads1115 import ADS1115
-from influx_db import InfluxDB
+class WeatherStation:
+    def __init__(self, temp_sensor, humidity_sensor, light_sensor, fan, database):
+        self.temp_sensor = temp_sensor
+        self.humidity_sensor = humidity_sensor
+        self.light_sensor = light_sensor
+        self.fan = fan
+        self.database = database
 
-dht = DHT11()
-light = ADS1115()
-database = InfluxDB()
+    def handle_fan(self, temp, threshold):
+        if temp is not None and temp > threshold:
+            if not self.fan.running:
+                self.fan.on()
+            else:
+                if self.motor.running:
+                    self.fan.off()
 
-while True:
-    temp = dht.temperature
-    humidity = dht.humidity
-    brightness = light.brightness
-    print(
-        f"Data written: Temp: {temp} | Humidity: {humidity} | Brightness: {brightness}"
-    )
+    def run(self, interval=5, temp_threshold=30):
+        try:
+            while True:
+                temp = self.temp_sensor.temperature
+                humidity = self.humidity_sensor.humidity
+                brightness = self.light_sensor.brightness
 
-    try:
-        database.write_record(temp, humidity, brightness) 
-    except Exception as error:
-        print("DB write failed:", error)
-    
-    time.sleep(5)
+                print(f"Data written: Temp: {temp} | Humidity: {humidity} | Brightness: {brightness}")
+
+                try:
+                    self.database.write_record(temp, humidity, brightness) 
+                except Exception as error:
+                    print("DB write failed:", error)
+                
+                self.handle_fan(temp, temp_threshold)
+
+                sleep(interval)
+
+        except KeyboardInterrupt:
+            print("Stopping weather station...")
+        finally:
+            self.fan.stop()
+            cleanup()
