@@ -7,8 +7,16 @@ class DHT11:
 
     @property
     def temperature(self):
-        return self.sensor.temperature
+        try:
+            return self.sensor.temperature
+        except Exception as e:
+            print(f"[DHT11] Temp read failed: {e.args[0]}")
+            return None
     
     @property
     def humidity(self):
-        return self.sensor.humidity
+        try:
+            return self.sensor.humidity
+        except Exception as e:
+            print(f"[DHT11] Humidity read failed: {e.args[0]}")
+            return None

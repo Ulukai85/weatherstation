@@ -9,7 +9,6 @@ gpio.setup(26, gpio.OUT)
 gpio.setup(13, gpio.OUT)
 
 pwm = gpio.PWM(13, 100)
-print(pwm)
 pwm.start(0)
 
 gpio.output(19, True)

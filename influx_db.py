@@ -14,5 +14,11 @@ class InfluxDB:
         self.write_api = self.client.write_api(write_options=SYNCHRONOUS)
 
     def write_record(self, temperature, humidity, brightness):
-        point = Point("environment").field("temperature", temperature).field("humidity", humidity).field("brightness", brightness)
+        point = Point("environment")
+        if temperature is not None:
+            point.field("temperature", temperature)
+        if humidity is not None:
+            point.field("humidity", humidity)
+        if brightness is not None:
+            point.field("brightness", brightness)
         self.write_api.write(bucket=self.bucket, org=self.org, record=point)
