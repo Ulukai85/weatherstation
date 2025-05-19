@@ -6,12 +6,21 @@ from motor import MotorController
 from weather_station import WeatherStation
 from gpio_setup import setup
 
+import os
+from dotenv import load_dotenv
+
 setup()
 
 def main():
+    load_dotenv()
     dht = DHT11()
     light = ADS1115()
-    database = InfluxDB()
+    database = InfluxDB(
+        token=os.getenv("TOKEN"),
+        org=os.getenv("ORG"),
+        url=os.getenv("URL"),
+        bucket=os.getenv("BUCKET")
+    )
     fan = MotorController()
 
     station = WeatherStation(
