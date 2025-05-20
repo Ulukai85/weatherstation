@@ -2,7 +2,27 @@ from time import sleep, strftime, localtime
 from gpio_setup import cleanup
 
 class WeatherStation:
+    """
+    A class to manage the weather station, including sensor readings, fan control, and data logging.
+
+    Attributes:
+        temp_sensor: Sensor object for temperature readings.
+        humidity_sensor: Sensor object for humidity readings.
+        light_sensor: Sensor object for brightness readings.
+        fan: MotorController object for fan control.
+        database: Database object for storing sensor data.
+    """
     def __init__(self, temp_sensor, humidity_sensor, light_sensor, fan, database):
+        """
+        Initialize the WeatherStation with sensors, fan, and database.
+
+        Args:
+            temp_sensor: Temperature sensor instance.
+            humidity_sensor: Humidity sensor instance.
+            light_sensor: Brightness sensor instance.
+            fan: MotorController instance for fan control.
+            database: Database instance for data storage.
+        """
         self.temp_sensor = temp_sensor
         self.humidity_sensor = humidity_sensor
         self.light_sensor = light_sensor
@@ -10,7 +30,13 @@ class WeatherStation:
         self.database = database
 
     def handle_fan(self, temp, threshold):
+        """
+        Control the fan based on the temperature and threshold.
 
+        Args:
+            temp (float or None): The current temperature.
+            threshold (float): The temperature threshold to turn the fan on.
+        """
         if temp is None:
             return
 
@@ -20,6 +46,13 @@ class WeatherStation:
             self.fan.off()
 
     def run(self, interval=5, temp_threshold=25):
+        """
+        Main loop to read sensors, control the fan, log data, and print status.
+
+        Args:
+            interval (int): Time in seconds between readings (default: 5).
+            temp_threshold (float): Temperature threshold for fan control (default: 25).
+        """
         timeformat = "%Y-%m-%d %H:%M:%S"
         try:
             while True:
